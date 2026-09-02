@@ -41,6 +41,15 @@ pull request must pass the required `verify` check and be current with `main`.
 Resolve review conversations before merging. Use squash or rebase merging so
 protected `main` remains linear.
 
+## Protected `main`
+
+GitHub requires every change to arrive through a pull request with the strict
+`verify` check from GitHub Actions. Branches must be current with `main`, review
+conversations must be resolved, and history must remain linear. Direct pushes,
+force pushes, and branch deletion are blocked for administrators too. A
+separate approval is not required because the parallel agents currently use
+one GitHub identity; the pull request boundary and required CI still apply.
+
 Parallel task agents do not update shared runtime files or deploy. After merge,
 the integration agent updates the primary checkout, verifies the exact merged
 commit, deploys one immutable image to UAT, performs smoke and acceptance
@@ -55,9 +64,10 @@ git fetch origin main
 scripts/agent-worktree.sh remove cms-015-navigation
 ```
 
-Removal refuses dirty worktrees and refuses branches not contained in
-`origin/main`. GitHub deletes the merged remote branch automatically; the
-helper removes the merged local branch and worktree.
+Removal refuses dirty worktrees. It accepts either Git ancestry or a merged
+GitHub pull request as integration evidence, so both rebase and squash merges
+can be cleaned up safely. GitHub deletes the merged remote branch
+automatically; the helper removes the merged local branch and worktree.
 
 Use `scripts/agent-worktree.sh list` to inspect all worktrees. If a task is
 abandoned with uncommitted work, preserve or explicitly discard that work
