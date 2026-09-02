@@ -66,11 +66,11 @@ export function FontFamilyPicker({ label, value, fonts, onChange }: {
         <MagnifyingGlassIcon aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3 z-10 size-5 -translate-y-1/2 text-gray-400" />
         <ComboboxInput
           aria-label={`${label} font family`}
-          className="admin-control w-full pr-10 pl-10"
+          className="admin-control admin-control-with-leading-icon w-full pr-10"
           displayValue={(font: GoogleFontFamily | null) => font?.family ?? ""}
           onChange={(event) => setQuery(event.target.value)}
         />
-        <ComboboxButton className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+        <ComboboxButton aria-label={`Open ${label} font list`} className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
           <ChevronUpDownIcon aria-hidden="true" className="size-5" />
         </ComboboxButton>
         <ComboboxOptions transition anchor="bottom start" className="z-50 mt-2 max-h-80 w-[var(--input-width)] overflow-auto rounded-lg bg-white p-1 shadow-xl outline outline-black/10 transition data-closed:opacity-0 dark:bg-gray-800 dark:-outline-offset-1 dark:outline-white/10">

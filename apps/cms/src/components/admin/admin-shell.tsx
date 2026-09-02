@@ -2,13 +2,14 @@
 
 import { authClient } from "@/lib/auth-client";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { ArrowTopRightOnSquareIcon, Bars3Icon, ChevronDownIcon, Cog6ToothIcon, DocumentTextIcon, FolderIcon, Squares2X2Icon, XMarkIcon } from "@heroicons/react/20/solid";
+import { ArrowTopRightOnSquareIcon, Bars3Icon, ChevronDownIcon, Cog6ToothIcon, DocumentTextIcon, FolderIcon, RectangleGroupIcon, Squares2X2Icon, XMarkIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AppearanceMenu } from "./appearance-menu";
 
 const navigation = [
   { href: "/admin", label: "Content", icon: DocumentTextIcon, match: (path: string) => path === "/admin" || path.startsWith("/admin/pages") },
+  { href: "/admin/structure", label: "Structure", icon: RectangleGroupIcon, match: (path: string) => path.startsWith("/admin/structure") },
   { href: "/admin/media", label: "Media", icon: FolderIcon, match: (path: string) => path.startsWith("/admin/media") },
   { href: "/admin/settings", label: "Site settings", icon: Cog6ToothIcon, match: (path: string) => path.startsWith("/admin/settings") },
   { href: "/reference", label: "Reference catalog", icon: Squares2X2Icon, match: (path: string) => path.startsWith("/reference") },

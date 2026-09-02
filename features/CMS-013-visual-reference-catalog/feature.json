@@ -1,7 +1,7 @@
 {
   "id": "CMS-013",
   "title": "Visual reference catalog",
-  "status": "building",
+  "status": "released",
   "story": {
     "actor": "designer, developer, content author, or connected product collaborator",
     "need": "inspect the real appearance and responsive behavior of governed screens, flows, patterns, and content blocks",

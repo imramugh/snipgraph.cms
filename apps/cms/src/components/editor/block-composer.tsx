@@ -10,12 +10,15 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/re
 import { Bars3BottomLeftIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 import { BlockFields } from "./block-fields";
+import type { PageTarget } from "@/components/admin/content-link-field";
 
 export function BlockComposer({
   blocks,
+  pageTargets,
   onChange,
 }: {
   blocks: ContentBlock[];
+  pageTargets: PageTarget[];
   onChange: (blocks: ContentBlock[]) => void;
 }) {
   const [selectedId, setSelectedId] = useState(blocks[0]?.id ?? "");
@@ -79,7 +82,7 @@ export function BlockComposer({
         <div className="fixed inset-0 overflow-hidden"><div className="absolute inset-0 overflow-hidden"><div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full pr-12"><DialogPanel transition className="pointer-events-auto w-screen max-w-sm transform bg-white shadow-xl transition duration-300 data-closed:-translate-x-full dark:bg-gray-900"><div className="flex h-full flex-col"><div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-white/10"><DialogTitle className="font-semibold text-gray-900 dark:text-white">Page structure</DialogTitle><button type="button" onClick={() => setOutlineOpen(false)} className="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-white"><span className="sr-only">Close block outline</span><XMarkIcon aria-hidden="true" className="size-6" /></button></div><div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto p-4">{outline(true)}</div></div></DialogPanel></div></div></div>
       </Dialog>
       {outline()}
-      {selected && <section className="editor-card selected-block min-w-0"><div className="block-label"><span>Edit block</span><code>{selected.type}.v{selected.version}</code></div><BlockFields block={selected} onChange={replace} /></section>}
+      {selected && <section className="editor-card selected-block min-w-0"><div className="block-label"><span>Edit block</span><code>{selected.type}.v{selected.version}</code></div><BlockFields block={selected} pageTargets={pageTargets} onChange={replace} /></section>}
     </div>
   );
 }

@@ -6,8 +6,9 @@ import { ArrowTopRightOnSquareIcon, ClockIcon, InformationCircleIcon, XMarkIcon 
 import { pageValueSchema, type PageAuditEvent, type PageRecord, type PageRevision, type PageValue } from "@snipgraph/content-domain";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import type { PageTarget } from "@/components/admin/content-link-field";
 
-export function PageEditor({ initialPage, initialRevisions, events }: { initialPage: PageRecord; initialRevisions: PageRevision[]; events: PageAuditEvent[] }) {
+export function PageEditor({ initialPage, initialRevisions, events, pageTargets }: { initialPage: PageRecord; initialRevisions: PageRevision[]; events: PageAuditEvent[]; pageTargets: PageTarget[] }) {
   const router = useRouter();
   const [page, setPage] = useState(initialPage);
   const [value, setValue] = useState<PageValue>(initialPage.draftRevision.value);
@@ -80,7 +81,7 @@ export function PageEditor({ initialPage, initialRevisions, events }: { initialP
     {issues.length > 0 && <section className="mt-6 rounded-md border-l-4 border-red-500 bg-red-50 p-4 text-sm text-red-800 dark:bg-red-400/10 dark:text-red-200" role="alert"><strong className="font-semibold">Content needs attention</strong><ul className="mt-2 list-disc space-y-1 pl-5">{issues.map((issue) => <li key={issue}>{issue}</li>)}</ul></section>}
 
     <div className="mt-8 grid grid-cols-1 items-start gap-6 xl:grid-cols-[12rem_minmax(0,1fr)_24rem]">
-      <BlockComposer blocks={value.blocks} onChange={(blocks) => change({ ...value, blocks })} />
+      <BlockComposer blocks={value.blocks} pageTargets={pageTargets} onChange={(blocks) => change({ ...value, blocks })} />
       <aside className="sticky top-6 hidden max-h-[calc(100vh-7rem)] overflow-y-auto xl:block">{inspector()}</aside>
     </div>
 
@@ -92,7 +93,7 @@ export function PageEditor({ initialPage, initialRevisions, events }: { initialP
 }
 
 function Inspector({ page, value, revisions, events, onField, mobile = false }: { page: PageRecord; value: PageValue; revisions: PageRevision[]; events: PageAuditEvent[]; onField: (name: "title" | "slug" | "description", value: string) => void; mobile?: boolean }) {
-  const inputClass = "mt-2 block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-emerald-600 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-emerald-500";
+  const inputClass = "mt-2 block w-full rounded-md bg-white px-3.5 py-2.5 text-sm/5 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-emerald-600 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-emerald-500";
   return <div className={`${mobile ? "" : "rounded-lg bg-white p-5 shadow-xs outline outline-black/5 dark:bg-gray-900 dark:-outline-offset-1 dark:outline-white/10"}`}>
     <div className="flex items-center justify-between"><h2 className="text-sm font-semibold text-gray-900 dark:text-white">Page details</h2><StateBadge published={Boolean(page.publishedRevision)} /></div>
     <div className="mt-5 grid gap-5"><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Title<input className={inputClass} value={value.title} onChange={(event) => onField("title", event.target.value)} /></label><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Path<input className={inputClass} value={value.slug} onChange={(event) => onField("slug", event.target.value)} /></label><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Description<textarea className={inputClass} rows={4} value={value.description} onChange={(event) => onField("description", event.target.value)} /></label></div>

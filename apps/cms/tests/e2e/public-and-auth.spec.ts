@@ -43,14 +43,14 @@ test("the reference catalog provides interactive visual specimens", async ({ pag
   await expect(page.getByRole("heading", { name: "Screens", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Flows", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Patterns", exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Blocks", exact: true })).toBeVisible();
+  await expect(page.locator(".visual-category-tabs").getByRole("heading", { name: "Blocks", exact: true })).toBeVisible();
   await expect(page.getByTitle(/Hero.+preview/)).toBeVisible();
 
   await page.getByRole("button", { name: /Feature grid.+marketing\.feature-grid\.v1/ }).click();
   await page.getByLabel("Preview variant").selectOption("with-code-example-panel");
   await expect(page.getByTitle(/Feature grid.+With Code Example Panel preview/)).toHaveAttribute("src", /with-code-example-panel/);
   await page.getByRole("button", { name: "Mobile preview" }).click();
-  expect(await page.locator(".visual-browser").evaluate((element) => element.getBoundingClientRect().width)).toBeLessThanOrEqual(392);
+  await expect.poll(() => page.locator(".visual-browser").evaluate((element) => element.getBoundingClientRect().width)).toBeLessThanOrEqual(392);
 
   await page.getByRole("button", { name: /Patterns.+specimens/ }).click();
   await expect(page.getByText("pattern.inline-editing.v1")).toBeVisible();
@@ -116,9 +116,11 @@ test("an authenticated owner can compose, preview, publish, and edit inline", as
   expect(await page.locator(".settings-section input").first().evaluate((element) => getComputedStyle(element).fontWeight)).toBe("400");
   expect(await page.locator(".settings-section label").first().evaluate((element) => getComputedStyle(element).fontWeight)).toBe("500");
   expect(await page.locator(".settings-section h2").first().evaluate((element) => getComputedStyle(element).fontWeight)).toBe("600");
-  await expect(page.getByLabel("Google Fonts family").first()).toHaveValue("Playfair Display");
+  await expect(page.getByLabel("Display type font family")).toHaveValue("Playfair Display");
   await expect(page.getByLabel("Header variant")).toBeVisible();
+  await page.getByRole("button", { name: /Edit Canvas color/ }).click();
   await expect(page.getByLabel("Canvas hexadecimal value")).toHaveValue("#FDFCF8");
+  await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Change appearance" }).click();
   await page.getByRole("menuitem", { name: "Dark" }).click();
   await expect(page.locator("html")).toHaveClass(/dark/);
@@ -129,18 +131,21 @@ test("an authenticated owner can compose, preview, publish, and edit inline", as
   await page.getByRole("button", { name: "Change appearance" }).click();
   await page.getByRole("menuitem", { name: "System" }).click();
 
-  const mediaFilename = `e2e-catalog-${testInfo.project.name}.png`;
+  const mediaRunId = `${Date.now()}-${testInfo.project.name}`;
+  const mediaFilename = `e2e-catalog-${mediaRunId}.png`;
+  const croppedMediaFilename = `e2e-catalog-${mediaRunId}-cropped.jpg`;
   await page.goto("/admin/media");
+  await page.getByRole("button", { name: "Upload and crop" }).click();
   await page.getByLabel("Image", { exact: true }).setInputFiles({
     name: mediaFilename,
     mimeType: "image/png",
     buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", "base64"),
   });
   await page.getByLabel("Alternative text").fill("A tiny image used by the browser contract");
-  await page.getByRole("button", { name: "Upload image" }).click();
-  await expect(page.getByText(`${mediaFilename} uploaded`)).toBeVisible();
-  await page.getByRole("button").filter({ hasText: mediaFilename }).first().click();
-  await expect(page.getByRole("dialog").getByText(mediaFilename, { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Save and use image" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.getByRole("button").filter({ hasText: croppedMediaFilename }).first().click();
+  await expect(page.getByRole("dialog").getByText(croppedMediaFilename, { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Close file details" }).click();
 
   await page.goto("/admin");
@@ -173,13 +178,15 @@ test("an authenticated owner can compose, preview, publish, and edit inline", as
   await addBlock("marketing.cta", 4);
   await page.getByLabel("Heading").fill("Browser-tested call to action");
   await addBlock("media.image", 5);
-  await page.getByLabel("Media asset").selectOption({ label: mediaFilename });
+  await page.getByRole("button", { name: /Choose or upload image/ }).click();
+  await page.getByRole("dialog").getByRole("button").filter({ hasText: croppedMediaFilename }).click();
   await addBlock("marketing.stats", 6);
   await page.getByLabel("Heading").fill("Browser-tested statistics");
   await addBlock("marketing.testimonial", 7);
   await page.getByLabel("Quotation").fill("This catalog works from authoring through publication.");
   await addBlock("marketing.logo-cloud", 8);
-  await page.getByLabel("Logo asset").selectOption({ label: mediaFilename });
+  await page.getByRole("button", { name: /Choose or upload image/ }).click();
+  await page.getByRole("dialog").getByRole("button").filter({ hasText: croppedMediaFilename }).click();
   await addBlock("content.project-grid", 9);
   await page.getByLabel("Heading").fill("Browser-tested projects");
   await addBlock("content.contact", 10);

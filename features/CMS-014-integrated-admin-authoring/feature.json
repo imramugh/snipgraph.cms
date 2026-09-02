@@ -1,7 +1,7 @@
 {
   "id": "CMS-014",
   "title": "Integrated admin authoring controls and site structure",
-  "status": "in-progress",
+  "status": "released",
   "story": {
     "actor": "site owner or content editor",
     "need": "choose visual settings, add media, and connect site content without leaving the work in progress",

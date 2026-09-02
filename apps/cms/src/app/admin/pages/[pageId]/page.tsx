@@ -8,14 +8,15 @@ export default async function EditPage({ params }: { params: Promise<{ pageId: s
   const pageId = (await params).pageId;
   const page = await pageRepository.findById(pageId);
   if (!page) notFound();
-  const [revisions, events] = await Promise.all([
+  const [revisions, events, pages] = await Promise.all([
     pageRepository.listRevisions(pageId),
     pageRepository.listAuditEvents(pageId),
+    pageRepository.list(page.siteId),
   ]);
 
   return (
     <section>
-      <PageEditor initialPage={page} initialRevisions={revisions} events={events} />
+      <PageEditor initialPage={page} initialRevisions={revisions} events={events} pageTargets={pages.map((item) => ({ id: item.id, title: item.draftRevision.value.title, href: item.draftRevision.value.slug, published: Boolean(item.publishedRevision) }))} />
     </section>
   );
 }

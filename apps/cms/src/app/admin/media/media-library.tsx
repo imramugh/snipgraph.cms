@@ -1,38 +1,19 @@
 "use client";
 
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
-import { MagnifyingGlassIcon, PhotoIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { MagnifyingGlassIcon, PhotoIcon, PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import type { MediaAsset } from "@snipgraph/content-domain";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
+import { MediaStudioDialog } from "@/components/admin/inline-media-picker";
 
-const inputClass = "mt-2 block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-emerald-600 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:disabled:bg-white/[.03] dark:focus:outline-emerald-500";
+const inputClass = "mt-2 block w-full rounded-md bg-white px-3.5 py-2.5 text-sm/5 text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-emerald-600 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:disabled:bg-white/[.03] dark:focus:outline-emerald-500";
 
 export function MediaLibrary({ initialMedia }: { initialMedia: MediaAsset[] }) {
   const [media, setMedia] = useState(initialMedia);
   const [selected, setSelected] = useState<MediaAsset | null>(null);
+  const [studioOpen, setStudioOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [altText, setAltText] = useState("");
-  const [decorative, setDecorative] = useState(false);
-  const [message, setMessage] = useState("");
-  const [pending, setPending] = useState(false);
-  const input = useRef<HTMLInputElement>(null);
   const filtered = useMemo(() => { const needle = query.toLowerCase(); return media.filter((asset) => `${asset.filename} ${asset.altText}`.toLowerCase().includes(needle)); }, [media, query]);
-
-  async function upload(event: React.FormEvent) {
-    event.preventDefault();
-    const file = input.current?.files?.[0];
-    if (!file) return setMessage("Choose an image to upload.");
-    const body = new FormData();
-    body.set("file", file); body.set("altText", altText); body.set("decorative", String(decorative));
-    setPending(true); setMessage("Validating and uploading…");
-    const response = await fetch("/api/media", { method: "POST", body });
-    const result = await response.json();
-    setPending(false);
-    if (!response.ok) return setMessage(result.error ?? "Upload failed");
-    setMedia((current) => [result.asset, ...current]); setAltText(""); setDecorative(false);
-    if (input.current) input.current.value = "";
-    setMessage(`${result.asset.filename} uploaded`);
-  }
 
   function update(next: MediaAsset) {
     setMedia((current) => current.map((candidate) => candidate.id === next.id ? next : candidate));
@@ -40,16 +21,7 @@ export function MediaLibrary({ initialMedia }: { initialMedia: MediaAsset[] }) {
   }
 
   return <section>
-    <header className="border-b border-gray-200 pb-6 dark:border-white/10"><p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Assets</p><h1 className="mt-1 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white">Media</h1><p className="mt-2 max-w-2xl text-sm/6 text-gray-600 dark:text-gray-400">Validated, reusable images with stable identifiers and accessible descriptions.</p></header>
-
-    <form className="mt-8 grid items-end gap-5 rounded-lg bg-white p-6 shadow-xs outline outline-black/5 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto] dark:bg-gray-900 dark:-outline-offset-1 dark:outline-white/10" onSubmit={upload}>
-      <div className="md:col-span-2 xl:col-span-4"><h2 className="text-base font-semibold text-gray-900 dark:text-white">Upload image</h2><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">JPEG, PNG, WebP, AVIF, or GIF up to 10 MB and 40 megapixels.</p></div>
-      <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Image<input className={inputClass} ref={input} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" required /></label>
-      <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Alternative text<input className={inputClass} disabled={decorative} value={altText} onChange={(event) => setAltText(event.target.value)} /></label>
-      <label className="flex min-h-10 items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300"><input className="size-4 rounded border-gray-300 accent-emerald-600" type="checkbox" checked={decorative} onChange={(event) => setDecorative(event.target.checked)} />Decorative image</label>
-      <button className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-400" disabled={pending}>{pending ? "Uploading…" : "Upload image"}</button>
-      {message && <p className="md:col-span-2 xl:col-span-4 rounded-md bg-blue-50 p-3 text-sm text-blue-700 dark:bg-blue-400/10 dark:text-blue-300" role="status">{message}</p>}
-    </form>
+    <header className="flex flex-col gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-end sm:justify-between dark:border-white/10"><div><p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Assets</p><h1 className="mt-1 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white">Media</h1><p className="mt-2 max-w-2xl text-sm/6 text-gray-600 dark:text-gray-400">Validated, reusable images with stable identifiers and accessible descriptions.</p></div><button type="button" onClick={() => setStudioOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500"><PlusIcon aria-hidden="true" className="size-5" />Upload and crop</button></header>
 
     <div className="mt-8 max-w-xl"><label><span className="block text-sm font-medium text-gray-900 dark:text-gray-100">Search media</span><span className="relative mt-2 block"><MagnifyingGlassIcon aria-hidden="true" className="pointer-events-none absolute left-3 top-2.5 size-5 text-gray-400" /><input className="block w-full rounded-md bg-white py-2 pr-3 pl-10 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-emerald-600 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-emerald-500" type="search" placeholder="Filename or alternative text" value={query} onChange={(event) => setQuery(event.target.value)} /></span></label></div>
 
@@ -59,6 +31,7 @@ export function MediaLibrary({ initialMedia }: { initialMedia: MediaAsset[] }) {
       <DialogBackdrop transition className="fixed inset-0 bg-gray-900/70 transition-opacity data-closed:opacity-0" />
       <div className="fixed inset-0 overflow-hidden"><div className="absolute inset-0 overflow-hidden"><div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16"><DialogPanel transition className="pointer-events-auto w-screen max-w-md transform transition duration-300 data-closed:translate-x-full"><div className="flex h-full flex-col bg-white shadow-xl dark:bg-gray-900 dark:ring-1 dark:ring-white/10">{selected && <MediaDetails key={selected.id} asset={selected} onClose={() => setSelected(null)} onUpdate={update} />}</div></DialogPanel></div></div></div>
     </Dialog>
+    <MediaStudioDialog open={studioOpen} initialView="upload" initialMedia={media} onClose={() => setStudioOpen(false)} onSelect={(asset) => { setMedia((current) => [asset, ...current.filter((item) => item.id !== asset.id)]); setStudioOpen(false); }} />
   </section>;
 }
 

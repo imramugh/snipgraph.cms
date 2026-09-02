@@ -2,7 +2,7 @@
 
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 
 const defaultSwatches = ["#FFFFFF", "#F7F3EA", "#DFE4E8", "#14181F", "#56606B", "#1F2A3D", "#AD6843", "#059669", "#DC2626", "#2563EB"];
@@ -14,12 +14,8 @@ export function RichColorPicker({ label, value, onChange, swatches = defaultSwat
   swatches?: string[];
 }) {
   const openingColor = useRef(value);
-  const [draft, setDraft] = useState(value);
-  useEffect(() => setDraft(value), [value]);
-
   function update(next: string) {
     const normalized = next.toUpperCase();
-    setDraft(normalized);
     if (/^#[0-9A-F]{6}$/.test(normalized)) onChange(normalized);
   }
 
@@ -27,7 +23,7 @@ export function RichColorPicker({ label, value, onChange, swatches = defaultSwat
     <span className="block text-sm font-medium text-gray-900 dark:text-gray-100">{label}</span>
     <Popover className="relative mt-2">
       {({ open }) => <>
-        <PopoverButton onClick={() => { if (!open) openingColor.current = value; }} className="admin-control flex w-full items-center gap-3 text-left">
+        <PopoverButton aria-label={`Edit ${label} color (${value})`} onClick={() => { if (!open) openingColor.current = value; }} className="admin-control flex w-full items-center gap-3 text-left">
           <span aria-hidden="true" className="size-7 shrink-0 rounded-md shadow-inner ring-1 ring-black/10" style={{ backgroundColor: value }} />
           <code className="min-w-0 flex-1 text-sm text-gray-800 dark:text-gray-100">{value}</code>
           <ChevronDownIcon aria-hidden="true" className="size-5 text-gray-400" />
@@ -39,7 +35,7 @@ export function RichColorPicker({ label, value, onChange, swatches = defaultSwat
             <div><span className="block text-xs font-medium text-gray-500 dark:text-gray-400">Current</span><span className="mt-1 block h-9 rounded-md ring-1 ring-black/10" style={{ backgroundColor: value }} /></div>
           </div>
           <label className="mt-4 block text-xs font-medium text-gray-600 dark:text-gray-300">Hexadecimal
-            <HexColorInput prefixed color={draft} onChange={update} className="admin-control mt-1 w-full font-mono uppercase" aria-label={`${label} hexadecimal value`} />
+            <HexColorInput prefixed color={value} onChange={update} className="admin-control mt-1 w-full font-mono uppercase" aria-label={`${label} hexadecimal value`} />
           </label>
           <div className="mt-4">
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Theme swatches</p>
