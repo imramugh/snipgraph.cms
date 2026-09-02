@@ -1,0 +1,19 @@
+{
+  "id": "CMS-009",
+  "title": "Operational resilience",
+  "status": "released",
+  "story": {"actor": "site operator", "need": "deploy and recover the CMS predictably on one VPS", "outcome": "UAT and production remain independently verifiable and recoverable"},
+  "scope": ["Automate validated database backups and retention", "Provide an isolated restore drill", "Monitor public health and MCP authorization challenges", "Safely prune unused project image layers", "Promote one immutable image from UAT to production"],
+  "nonGoals": ["Multi-region failover", "Managed external alerting", "Kubernetes orchestration"],
+  "references": ["flow.uat-production-promotion.v1"],
+  "dataRequirements": ["Backups use PostgreSQL custom format", "Backup paths identify environment and UTC time", "Deployment records image tag and image ID"],
+  "permissions": ["Only the VPS operator can run backup, restore, and deployment commands", "Health endpoints reveal no secrets"],
+  "mcpImpact": {"resources": [], "tools": []},
+  "acceptanceCriteria": [
+    {"id": "AC-01", "given": "a running environment", "when": "the scheduled backup executes", "then": ["a private custom-format dump is written atomically", "pg_restore validates its catalog", "expired backups are removed"]},
+    {"id": "AC-02", "given": "a validated backup", "when": "the restore drill runs", "then": ["it restores into an isolated temporary database", "required CMS tables are queried", "the temporary database is removed"]},
+    {"id": "AC-03", "given": "a candidate image", "when": "production promotion begins", "then": ["the same image ID has passed UAT", "both public health and MCP scope challenges pass after deployment"]}
+  ],
+  "fixtures": ["running UAT stack", "running production stack", "valid custom-format backup"],
+  "verification": ["UAT backup and restore drill", "systemd timer status", "post-deployment smoke test", "image ID comparison"]
+}

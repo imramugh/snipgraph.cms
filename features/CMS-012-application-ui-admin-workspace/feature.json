@@ -1,0 +1,106 @@
+{
+  "id": "CMS-012",
+  "title": "Application UI admin workspace",
+  "status": "released",
+  "story": {
+    "actor": "authenticated site owner or editor",
+    "need": "manage content through a coherent, responsive administration workspace built from governed Application UI patterns",
+    "outcome": "content, media, settings, publishing, and revision work remain clear and efficient in light or dark mode"
+  },
+  "scope": [
+    "Replace the existing admin shell with a responsive stacked navigation shell",
+    "Provide explicit light, dark, and system appearance choices with a persistent user preference",
+    "Rebuild content lists, page creation, media, and settings with shared Application UI controls and feedback",
+    "Use a three-pane desktop editor with block outline, primary form, and contextual publishing inspector",
+    "Convert secondary editor panes to accessible drawers on narrower screens",
+    "Preserve all existing draft, preview, publish, revision, media, and settings behavior"
+  ],
+  "nonGoals": [
+    "Changing the public-site theme or Marketing block renderer",
+    "Changing content schemas, permissions, revision semantics, or MCP contracts",
+    "Copying licensed source examples into documentation",
+    "Adding new administrative product capabilities unrelated to the redesign"
+  ],
+  "references": [
+    "pattern.admin-application-shell.v1",
+    "pattern.admin-typography.v1",
+    "screen.content-list.v1",
+    "screen.page-create.v1",
+    "screen.content-editor.v1",
+    "screen.revision-history.v1",
+    "screen.media-library.v1",
+    "screen.site-settings.v1",
+    "screen.theme-settings.v1"
+  ],
+  "dataRequirements": [
+    "The appearance preference is one of system, light, or dark and is stored locally per browser",
+    "Navigation state derives from the current route and is not persisted as content",
+    "Editor pane selection is ephemeral interface state and never enters a content revision",
+    "Existing page, media, settings, revision, and audit data remain unchanged"
+  ],
+  "permissions": [
+    "Only authenticated users on the existing allowlist may render the admin workspace",
+    "Presentation changes do not weaken existing service-layer authorization",
+    "Anonymous visitors cannot read administrative data or preferences from the server"
+  ],
+  "mcpImpact": {
+    "resources": [],
+    "tools": []
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "an authenticated user on any admin route",
+      "when": "the workspace renders on desktop or mobile",
+      "then": [
+        "stacked navigation exposes Content, Media, Site settings, Reference catalog, View site, appearance, and account actions",
+        "the current destination and keyboard focus are visually unambiguous",
+        "mobile navigation is operable as an accessible disclosure"
+      ]
+    },
+    {
+      "id": "AC-02",
+      "given": "a user editing a page on a wide viewport",
+      "when": "they select and configure blocks",
+      "then": [
+        "the block outline, primary editing form, and publishing inspector remain independently scannable",
+        "save, preview, and publish state stays visible",
+        "the same secondary panes open as accessible drawers on narrower viewports"
+      ]
+    },
+    {
+      "id": "AC-03",
+      "given": "a user chooses system, light, or dark appearance",
+      "when": "they navigate or reload the admin",
+      "then": [
+        "the preference persists in that browser",
+        "system mode follows the operating-system preference",
+        "all admin controls, dialogs, tables, states, and focus indicators meet WCAG AA contrast"
+      ]
+    },
+    {
+      "id": "AC-04",
+      "given": "existing pages, media, settings, and revisions",
+      "when": "the redesigned screens are used",
+      "then": [
+        "all existing authoring and publishing workflows remain available",
+        "mutations still call the shared application services",
+        "MCP behavior and public rendering remain unchanged"
+      ]
+    }
+  ],
+  "fixtures": [
+    "empty and populated content lists",
+    "page containing all seventeen block families",
+    "media library with portrait, landscape, and decorative images",
+    "site settings containing navigation, footer groups, theme, and redirects",
+    "light, dark, and system appearance preferences"
+  ],
+  "verification": [
+    "Admin shell route and appearance preference component tests",
+    "Desktop and mobile browser tests for every admin route",
+    "Keyboard navigation and focus-order tests for navigation, menus, drawers, and dialogs",
+    "Light and dark accessibility scans",
+    "Existing MCP contract, domain, build, UAT, and production verification loops"
+  ]
+}

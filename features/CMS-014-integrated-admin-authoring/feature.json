@@ -1,0 +1,95 @@
+{
+  "id": "CMS-014",
+  "title": "Integrated admin authoring controls and site structure",
+  "status": "in-progress",
+  "story": {
+    "actor": "site owner or content editor",
+    "need": "choose visual settings, add media, and connect site content without leaving the work in progress",
+    "outcome": "the admin workspace feels deliberate, previews choices in context, and makes broken internal links visible before publication"
+  },
+  "scope": [
+    "Apply one spacious, legible control treatment to admin text fields, text areas, and selects",
+    "Browse and search the current Google Fonts catalog with live family previews",
+    "Offer only the weights published for the selected Google Font family",
+    "Edit semantic colors with a full saturation and hue picker, direct hexadecimal input, and useful swatches",
+    "Upload, preview, crop, describe, save, and select an image from every media-bearing authoring context",
+    "Show the site as pages, page layouts, navigation membership, and link-health relationships",
+    "Choose internal content targets by page while retaining safe custom external links"
+  ],
+  "nonGoals": [
+    "A free-form canvas that bypasses governed blocks",
+    "Video editing or transcoding",
+    "Deleting media that is referenced by content",
+    "Downloading or redistributing Google Font binaries",
+    "Replacing revisioned draft and publish workflows"
+  ],
+  "references": [
+    "pattern.admin-form-controls.v1",
+    "pattern.inline-media-studio.v1",
+    "screen.site-structure.v1",
+    "screen.theme-settings.v1",
+    "pattern.media-picker.v1",
+    "pattern.block-composer.v1"
+  ],
+  "dataRequirements": [
+    "Google Font catalog entries include family, category, and published upright weights",
+    "Cropped images are uploaded as normal validated assets and content continues to store stable media identifiers",
+    "Page-aware links continue to store safe href values so public rendering and MCP contracts remain compatible",
+    "Link health is derived from current page revisions and the current settings draft rather than stored separately"
+  ],
+  "permissions": [
+    "Authenticated editors may browse fonts, upload media, and inspect site structure",
+    "Existing media, settings, content, and publish permissions remain authoritative",
+    "Anonymous visitors receive none of the admin catalogs or authoring controls"
+  ],
+  "mcpImpact": {
+    "resources": ["cms://site/settings", "cms://media", "cms://pages"],
+    "tools": ["read_site_settings", "update_site_settings_draft", "list_media", "upload_media", "list_pages"],
+    "notes": "Stored contracts are unchanged; richer admin controls call the existing application services and APIs."
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "an admin form field",
+      "when": "an editor enters or reviews text",
+      "then": ["text has consistent vertical and horizontal breathing room", "labels, help text, focus, disabled, and error states remain legible in light and dark appearances"]
+    },
+    {
+      "id": "AC-02",
+      "given": "a typography role",
+      "when": "an editor opens the family chooser",
+      "then": ["the Google Fonts catalog is searchable", "candidate names render in their own family", "only weights available for the selected family can be chosen", "at least one weight always remains selected"]
+    },
+    {
+      "id": "AC-03",
+      "given": "a semantic color field",
+      "when": "an editor opens it",
+      "then": ["a saturation and hue surface is available", "the current and previous colors are visible", "hex input and reusable swatches stay synchronized"]
+    },
+    {
+      "id": "AC-04",
+      "given": "a media-bearing settings or block field",
+      "when": "an editor chooses a local image",
+      "then": ["the image is previewed in place", "crop, zoom, rotation, alt text, and decorative state are available before upload", "saving uploads through the shared media service and immediately associates the returned media ID with the content"]
+    },
+    {
+      "id": "AC-05",
+      "given": "site pages and settings",
+      "when": "an editor opens Site structure",
+      "then": ["every page exposes its governed block layout and publication state", "navigation membership and inbound links are visible", "unresolved internal links and unlinked pages are called out", "edit-layout and navigation actions lead directly to the relevant authoring context"]
+    }
+  ],
+  "fixtures": [
+    "Google Fonts catalog with static and variable families",
+    "settings with valid and broken internal links",
+    "landscape image cropped square and wide",
+    "published, draft-only, linked, and unlinked pages"
+  ],
+  "verification": [
+    "Font catalog parsing and weight-selection unit tests",
+    "Site link graph unit tests",
+    "Inline media upload and crop browser test",
+    "Theme control and Site structure browser review",
+    "Existing media, settings, page, MCP, accessibility, and deployment checks"
+  ]
+}

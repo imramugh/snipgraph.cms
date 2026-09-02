@@ -1,0 +1,84 @@
+{
+  "id": "CMS-011",
+  "title": "Governed typography and color themes",
+  "status": "released",
+  "story": {
+    "actor": "site owner or delegated agent",
+    "need": "customize typography and color across the whole site without introducing one-off styling",
+    "outcome": "every block and chrome variant shares a coherent, accessible, publishable visual language"
+  },
+  "scope": [
+    "Configure Google Fonts for display, body, and monospace roles",
+    "Configure semantic color tokens and governed named schemes",
+    "Apply theme tokens to blocks, header, footer, banners, previews, and published pages",
+    "Version theme changes inside the existing site-settings draft and publish workflow",
+    "Validate color values, Google Font family names, and critical foreground/background contrast"
+  ],
+  "nonGoals": [
+    "Arbitrary per-element CSS",
+    "Raw per-block color overrides",
+    "Uploading or redistributing font files",
+    "Applying the public theme to the CMS administration interface"
+  ],
+  "references": [
+    "pattern.governed-theme.v1",
+    "screen.theme-settings.v1",
+    "pattern.site-chrome.v1",
+    "flow.draft-publish.v1"
+  ],
+  "dataRequirements": [
+    "Font roles store a validated Google Fonts family and explicit supported weights",
+    "Colors are six-digit hexadecimal values assigned to semantic roles",
+    "Named schemes map semantic foreground, background, muted, accent, and border roles",
+    "Blocks select only registered schemes supported by their variant"
+  ],
+  "permissions": [
+    "Anonymous visitors read the published theme only",
+    "Authenticated editors may change the theme draft",
+    "Publishing the theme requires cms:publish through MCP"
+  ],
+  "mcpImpact": {
+    "resources": ["cms://site/settings", "cms://catalog/theme"],
+    "tools": ["read_site_settings", "update_site_settings_draft", "publish_site_settings"]
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "a valid theme draft",
+      "when": "it is previewed and published",
+      "then": [
+        "Google Fonts are loaded from fonts.googleapis.com using one deduplicated request",
+        "semantic CSS variables are applied to the public site only",
+        "all page blocks and site chrome inherit the published theme"
+      ]
+    },
+    {
+      "id": "AC-02",
+      "given": "an invalid color, unsafe font family, or inaccessible critical color pair",
+      "when": "an editor or MCP client saves settings",
+      "then": [
+        "the shared domain schema rejects the draft with field-level issues",
+        "the previous draft and published theme remain unchanged"
+      ]
+    },
+    {
+      "id": "AC-03",
+      "given": "the current imran.mughal.com visual identity",
+      "when": "Inter, Playfair Display, and its semantic palette are configured",
+      "then": [
+        "the theme model represents the identity without raw block-level overrides"
+      ]
+    }
+  ],
+  "fixtures": [
+    "Snipgraph default theme",
+    "Imran site theme using Inter, Playfair Display, navy, cream, copper, mist, and sand",
+    "invalid low-contrast theme"
+  ],
+  "verification": [
+    "Theme schema and contrast unit tests",
+    "Google Fonts URL contract test",
+    "Draft/publish settings browser test",
+    "Public theme responsive and accessibility scan"
+  ]
+}

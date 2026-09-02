@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily Snipgraph CMS backup (%i)
+
+[Timer]
+OnCalendar=*-*-* 02:15:00 UTC
+RandomizedDelaySec=20m
+Persistent=true
+Unit=snipgraph-cms-backup@%i.service
+
+[Install]
+WantedBy=timers.target
+

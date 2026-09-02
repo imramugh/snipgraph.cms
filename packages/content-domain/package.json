@@ -1,0 +1,22 @@
+{
+  "name": "@snipgraph/content-domain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "eslint": "10.9.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

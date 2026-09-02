@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title description">
+  <title id="title">Abstract reference preview</title>
+  <desc id="description">Layered green and sand shapes used as neutral example media.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8f5ef"/>
+      <stop offset="1" stop-color="#d4e5dc"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#047857"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#background)"/>
+  <circle cx="1010" cy="90" r="300" fill="#f0c98b" opacity=".72"/>
+  <path d="M0 620C180 490 326 470 472 544s264 88 392 18c128-71 236-77 336-18v256H0Z" fill="#fff" opacity=".72"/>
+  <rect x="124" y="126" width="500" height="382" rx="30" fill="#fff" opacity=".9"/>
+  <rect x="174" y="184" width="160" height="18" rx="9" fill="#a7f3d0"/>
+  <rect x="174" y="232" width="352" height="46" rx="15" fill="#17201d"/>
+  <rect x="174" y="306" width="390" height="16" rx="8" fill="#b8c6bf"/>
+  <rect x="174" y="340" width="310" height="16" rx="8" fill="#d1d9d5"/>
+  <rect x="174" y="410" width="142" height="52" rx="15" fill="url(#accent)"/>
+  <rect x="708" y="320" width="310" height="310" rx="42" fill="url(#accent)" transform="rotate(-8 863 475)"/>
+  <circle cx="863" cy="475" r="82" fill="#fff" opacity=".82"/>
+</svg>

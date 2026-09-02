@@ -1,0 +1,39 @@
+{
+  "id": "CMS-005",
+  "title": "Progressive MCP authorization",
+  "status": "released",
+  "story": {
+    "actor": "human operating an MCP client",
+    "need": "authorize the least privilege required by each requested CMS operation",
+    "outcome": "read, draft, and publish operations work without silently over-privileging the client"
+  },
+  "scope": [
+    "Map every MCP tool call to its required OAuth scope at the HTTP authorization boundary",
+    "Challenge insufficiently scoped clients so interactive OAuth can elevate consent",
+    "Preserve tool-level scope checks as defense in depth"
+  ],
+  "nonGoals": ["Unattended service accounts", "Implicit publication", "Permanent blanket authorization"],
+  "references": ["flow.mcp-content-operation.v1"],
+  "dataRequirements": ["OAuth consent records the granted scope set", "Access tokens carry the granted scopes"],
+  "permissions": ["Reads require cms:content:read", "Draft mutations require cms:content:write", "Publication requires cms:publish"],
+  "mcpImpact": {
+    "resources": ["reference://catalog", "cms://catalog/blocks", "cms://pages/{pageId}/history"],
+    "tools": ["list_pages", "read_page", "read_page_history", "create_page_draft", "update_page_draft", "publish_page"]
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "a client holding only cms:content:read",
+      "when": "it calls a draft mutation",
+      "then": ["the HTTP boundary returns an insufficient-scope challenge for cms:content:write", "the client can complete interactive OAuth and retry"]
+    },
+    {
+      "id": "AC-02",
+      "given": "an unauthenticated MCP client",
+      "when": "it calls a publish tool",
+      "then": ["the authorization challenge names cms:publish", "read permission is not substituted for publish permission"]
+    }
+  ],
+  "fixtures": ["read-only token", "write token", "publish token"],
+  "verification": ["Scope mapping unit test", "UAT OAuth challenge smoke test", "Claude Desktop write and publish test"]
+}

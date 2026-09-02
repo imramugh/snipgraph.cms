@@ -1,0 +1,27 @@
+{
+  "name": "@snipgraph/reference-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "tsx src/check-features.ts ../../features ../../references/catalog",
+    "check:marketing": "tsx src/check-marketing-coverage.ts"
+  },
+  "dependencies": {
+    "@snipgraph/content-domain": "workspace:*",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "eslint": "10.9.1",
+    "tsx": "4.23.13",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

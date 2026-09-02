@@ -1,0 +1,23 @@
+{
+  "id": "CMS-006",
+  "title": "Site presentation settings",
+  "status": "released",
+  "story": {
+    "actor": "site owner",
+    "need": "manage shared identity, navigation, footer, metadata, social links, and redirects",
+    "outcome": "the public site remains coherent without hard-coded presentation content"
+  },
+  "scope": ["Draft and publish site settings", "Render the published site shell and metadata", "Configure ordered navigation, social profiles, and redirects", "Apply the administrative typography system"],
+  "nonGoals": ["Multiple sites per account", "Approval workflows", "Theme marketplace"],
+  "references": ["screen.site-settings.v1", "flow.draft-publish.v1", "pattern.revision-conflict.v1", "pattern.admin-typography.v1"],
+  "dataRequirements": ["Settings revisions are immutable and numbered", "Draft and published settings pointers are independent", "Links use the shared safe-link policy"],
+  "permissions": ["Only authenticated owners may change settings", "Anonymous visitors receive only published settings"],
+  "mcpImpact": {"resources": ["cms://site/settings"], "tools": ["read_site_settings", "update_site_settings_draft", "publish_site_settings"]},
+  "acceptanceCriteria": [
+    {"id": "AC-01", "given": "published settings and an authenticated owner", "when": "the owner saves changed navigation", "then": ["the public navigation is unchanged", "the settings draft contains the ordered changes"]},
+    {"id": "AC-02", "given": "a valid current settings draft", "when": "the owner publishes it", "then": ["the public shell and metadata use the new revision", "the action is auditable"]},
+    {"id": "AC-03", "given": "an administrative screen", "when": "its content renders", "then": ["body and field text use regular weight", "labels and controls use medium weight", "headings use semibold weight"]}
+  ],
+  "fixtures": ["default settings", "published settings with newer draft", "navigation and redirects"],
+  "verification": ["Settings schema tests", "Repository integration test", "Admin browser test", "Public metadata and shell test", "Typography visual review"]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "snipgraph-cms",
+  "private": true,
+  "version": "0.5.0",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @snipgraph/cms dev",
+    "build": "pnpm --filter @snipgraph/cms build",
+    "start": "pnpm --filter @snipgraph/cms start",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter @snipgraph/cms test:e2e",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "reference:check": "pnpm --filter @snipgraph/reference-kit check",
+    "marketing:check": "pnpm --filter @snipgraph/reference-kit check:marketing",
+    "db:generate": "pnpm --filter @snipgraph/cms db:generate",
+    "db:migrate": "pnpm --filter @snipgraph/cms db:migrate",
+    "db:seed": "pnpm --filter @snipgraph/cms db:seed"
+  },
+  "devDependencies": {
+    "eslint": "9.39.5",
+    "typescript-eslint": "8.69.0"
+  }
+}

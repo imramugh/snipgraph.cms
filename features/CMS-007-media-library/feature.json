@@ -1,0 +1,23 @@
+{
+  "id": "CMS-007",
+  "title": "Media library",
+  "status": "released",
+  "story": {
+    "actor": "site owner or delegated agent",
+    "need": "upload and reuse validated images in structured content",
+    "outcome": "site imagery is governed, accessible, and stable across deployments"
+  },
+  "scope": ["Upload and validate raster images", "Browse and search media", "Serve immutable media URLs", "Use media assets in governed image blocks"],
+  "nonGoals": ["Video transcoding", "External DAM synchronization", "AI image generation"],
+  "references": ["screen.media-library.v1", "pattern.media-picker.v1", "pattern.block-composer.v1"],
+  "dataRequirements": ["Assets retain stable identifiers and binary content", "Metadata includes format, dimensions, size, checksum, alt text, actor, and timestamp", "Content stores media identifiers"],
+  "permissions": ["Anonymous visitors may read referenced media", "Only authenticated editors may upload or change metadata"],
+  "mcpImpact": {"resources": ["cms://media"], "tools": ["list_media", "upload_media", "update_media_metadata"]},
+  "acceptanceCriteria": [
+    {"id": "AC-01", "given": "an authenticated editor and a valid supported image", "when": "the image is uploaded", "then": ["actual image bytes and size are validated", "the asset appears in the searchable library"]},
+    {"id": "AC-02", "given": "an image block", "when": "the editor selects a media asset and saves", "then": ["the stable asset identifier is stored", "preview and public rendering use the media endpoint"]},
+    {"id": "AC-03", "given": "an unsupported or malformed file", "when": "it is uploaded", "then": ["the server rejects it", "no partial media record remains"]}
+  ],
+  "fixtures": ["empty library", "valid JPEG and PNG", "malformed image", "page with image block"],
+  "verification": ["Upload validation tests", "Authenticated API test", "Media library browser test", "Public image block test"]
+}

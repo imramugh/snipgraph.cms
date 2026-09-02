@@ -1,0 +1,72 @@
+"use client";
+
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
+import { MagnifyingGlassIcon, PhotoIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import type { MediaAsset } from "@snipgraph/content-domain";
+import { useMemo, useRef, useState } from "react";
+
+const inputClass = "mt-2 block w-full rounded-md bg-white px-3 py-2 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-emerald-600 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:disabled:bg-white/[.03] dark:focus:outline-emerald-500";
+
+export function MediaLibrary({ initialMedia }: { initialMedia: MediaAsset[] }) {
+  const [media, setMedia] = useState(initialMedia);
+  const [selected, setSelected] = useState<MediaAsset | null>(null);
+  const [query, setQuery] = useState("");
+  const [altText, setAltText] = useState("");
+  const [decorative, setDecorative] = useState(false);
+  const [message, setMessage] = useState("");
+  const [pending, setPending] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
+  const filtered = useMemo(() => { const needle = query.toLowerCase(); return media.filter((asset) => `${asset.filename} ${asset.altText}`.toLowerCase().includes(needle)); }, [media, query]);
+
+  async function upload(event: React.FormEvent) {
+    event.preventDefault();
+    const file = input.current?.files?.[0];
+    if (!file) return setMessage("Choose an image to upload.");
+    const body = new FormData();
+    body.set("file", file); body.set("altText", altText); body.set("decorative", String(decorative));
+    setPending(true); setMessage("Validating and uploading…");
+    const response = await fetch("/api/media", { method: "POST", body });
+    const result = await response.json();
+    setPending(false);
+    if (!response.ok) return setMessage(result.error ?? "Upload failed");
+    setMedia((current) => [result.asset, ...current]); setAltText(""); setDecorative(false);
+    if (input.current) input.current.value = "";
+    setMessage(`${result.asset.filename} uploaded`);
+  }
+
+  function update(next: MediaAsset) {
+    setMedia((current) => current.map((candidate) => candidate.id === next.id ? next : candidate));
+    setSelected(next);
+  }
+
+  return <section>
+    <header className="border-b border-gray-200 pb-6 dark:border-white/10"><p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Assets</p><h1 className="mt-1 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white">Media</h1><p className="mt-2 max-w-2xl text-sm/6 text-gray-600 dark:text-gray-400">Validated, reusable images with stable identifiers and accessible descriptions.</p></header>
+
+    <form className="mt-8 grid items-end gap-5 rounded-lg bg-white p-6 shadow-xs outline outline-black/5 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto] dark:bg-gray-900 dark:-outline-offset-1 dark:outline-white/10" onSubmit={upload}>
+      <div className="md:col-span-2 xl:col-span-4"><h2 className="text-base font-semibold text-gray-900 dark:text-white">Upload image</h2><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">JPEG, PNG, WebP, AVIF, or GIF up to 10 MB and 40 megapixels.</p></div>
+      <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Image<input className={inputClass} ref={input} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" required /></label>
+      <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Alternative text<input className={inputClass} disabled={decorative} value={altText} onChange={(event) => setAltText(event.target.value)} /></label>
+      <label className="flex min-h-10 items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300"><input className="size-4 rounded border-gray-300 accent-emerald-600" type="checkbox" checked={decorative} onChange={(event) => setDecorative(event.target.checked)} />Decorative image</label>
+      <button className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-400" disabled={pending}>{pending ? "Uploading…" : "Upload image"}</button>
+      {message && <p className="md:col-span-2 xl:col-span-4 rounded-md bg-blue-50 p-3 text-sm text-blue-700 dark:bg-blue-400/10 dark:text-blue-300" role="status">{message}</p>}
+    </form>
+
+    <div className="mt-8 max-w-xl"><label><span className="block text-sm font-medium text-gray-900 dark:text-gray-100">Search media</span><span className="relative mt-2 block"><MagnifyingGlassIcon aria-hidden="true" className="pointer-events-none absolute left-3 top-2.5 size-5 text-gray-400" /><input className="block w-full rounded-md bg-white py-2 pr-3 pl-10 text-sm text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-emerald-600 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-emerald-500" type="search" placeholder="Filename or alternative text" value={query} onChange={(event) => setQuery(event.target.value)} /></span></label></div>
+
+    {media.length === 0 ? <EmptyMedia title="Upload your first image" body="Assets become available to image blocks and connected agents." /> : filtered.length === 0 ? <EmptyMedia title="No matching media" body="Try a different filename or description." /> : <ul role="list" className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">{filtered.map((asset) => <li key={asset.id} className="relative"><button type="button" onClick={() => setSelected(asset)} className="group block w-full text-left"><span className="block aspect-square overflow-hidden rounded-lg bg-gray-100 outline outline-black/5 group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-emerald-600 dark:bg-gray-800 dark:-outline-offset-1 dark:outline-white/10"><img src={`/api/media/${asset.id}`} alt={asset.decorative ? "" : asset.altText} className="size-full object-cover transition group-hover:opacity-80" /></span><span className="mt-2 block truncate text-sm font-medium text-gray-900 dark:text-white">{asset.filename}</span><span className="block text-xs text-gray-500 dark:text-gray-400">{asset.width} × {asset.height} · {formatBytes(asset.byteSize)}</span><span className="sr-only">View details for {asset.filename}</span></button></li>)}</ul>}
+
+    <Dialog open={Boolean(selected)} onClose={() => setSelected(null)} className="relative z-50">
+      <DialogBackdrop transition className="fixed inset-0 bg-gray-900/70 transition-opacity data-closed:opacity-0" />
+      <div className="fixed inset-0 overflow-hidden"><div className="absolute inset-0 overflow-hidden"><div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16"><DialogPanel transition className="pointer-events-auto w-screen max-w-md transform transition duration-300 data-closed:translate-x-full"><div className="flex h-full flex-col bg-white shadow-xl dark:bg-gray-900 dark:ring-1 dark:ring-white/10">{selected && <MediaDetails key={selected.id} asset={selected} onClose={() => setSelected(null)} onUpdate={update} />}</div></DialogPanel></div></div></div>
+    </Dialog>
+  </section>;
+}
+
+function MediaDetails({ asset, onClose, onUpdate }: { asset: MediaAsset; onClose: () => void; onUpdate: (asset: MediaAsset) => void }) {
+  const [altText, setAltText] = useState(asset.altText); const [decorative, setDecorative] = useState(asset.decorative); const [message, setMessage] = useState(""); const [pending, setPending] = useState(false);
+  async function save(event: React.FormEvent) { event.preventDefault(); setPending(true); setMessage("Saving…"); const response = await fetch(`/api/media/${asset.id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ altText, decorative }) }); const result = await response.json(); setPending(false); if (!response.ok) return setMessage(result.error ?? "Save failed"); onUpdate(result.asset); setMessage("Metadata saved"); }
+  return <form className="flex h-full flex-col" onSubmit={save}><div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-white/10"><DialogTitle className="truncate font-semibold text-gray-900 dark:text-white">{asset.filename}</DialogTitle><button type="button" onClick={onClose} className="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-white"><span className="sr-only">Close file details</span><XMarkIcon aria-hidden="true" className="size-6" /></button></div><div className="min-h-0 flex-1 overflow-y-auto p-5"><img src={`/api/media/${asset.id}`} alt="" className="aspect-video w-full rounded-lg bg-gray-100 object-contain dark:bg-gray-800" /><dl className="mt-5 grid grid-cols-2 gap-4 text-sm"><div><dt className="text-gray-500 dark:text-gray-400">Dimensions</dt><dd className="mt-1 text-gray-900 dark:text-white">{asset.width} × {asset.height}</dd></div><div><dt className="text-gray-500 dark:text-gray-400">File size</dt><dd className="mt-1 text-gray-900 dark:text-white">{formatBytes(asset.byteSize)}</dd></div></dl><div className="mt-6 grid gap-5"><label className="text-sm font-medium text-gray-900 dark:text-gray-100">Alternative text<textarea className={inputClass} rows={4} disabled={decorative} value={altText} onChange={(event) => setAltText(event.target.value)} /></label><label className="flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300"><input className="size-4 accent-emerald-600" type="checkbox" checked={decorative} onChange={(event) => setDecorative(event.target.checked)} />Decorative image</label><div><p className="text-xs text-gray-500 dark:text-gray-400">Asset ID</p><code className="mt-1 block break-all text-xs text-gray-700 dark:text-gray-300">{asset.id}</code></div>{message && <p className="rounded-md bg-blue-50 p-3 text-sm text-blue-700 dark:bg-blue-400/10 dark:text-blue-300" role="status">{message}</p>}</div></div><div className="flex justify-end gap-3 border-t border-gray-200 px-5 py-4 dark:border-white/10"><button type="button" onClick={onClose} className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-xs outline outline-black/5 hover:bg-gray-50 dark:bg-white/10 dark:text-gray-100 dark:-outline-offset-1 dark:outline-white/10">Cancel</button><button disabled={pending} className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-emerald-500 disabled:opacity-50">{pending ? "Saving…" : "Save metadata"}</button></div></form>;
+}
+
+function EmptyMedia({ title, body }: { title: string; body: string }) { return <div className="mt-8 rounded-lg border-2 border-dashed border-gray-300 px-6 py-14 text-center dark:border-white/15"><PhotoIcon aria-hidden="true" className="mx-auto size-12 text-gray-400" /><h2 className="mt-4 text-sm font-semibold text-gray-900 dark:text-white">{title}</h2><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{body}</p></div>; }
+function formatBytes(bytes: number) { return bytes < 1024 * 1024 ? `${Math.round(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`; }

@@ -1,0 +1,61 @@
+{
+  "id": "CMS-004",
+  "title": "History audit and MCP parity",
+  "status": "released",
+  "story": {
+    "actor": "site owner or delegated agent",
+    "need": "understand content history and perform the same safe operations through MCP",
+    "outcome": "trust every change regardless of whether a person or agent made it"
+  },
+  "scope": [
+    "Display immutable revision history and audit events",
+    "Expose block catalog, page state, revisions, and audit context through MCP",
+    "Enforce read, write, and publish scopes independently",
+    "Return actionable validation and concurrency failures",
+    "Contract-test MCP discovery and tool behavior"
+  ],
+  "nonGoals": ["Revision restoration", "Approval workflows", "Unattended service accounts", "Scheduled operations"],
+  "references": ["screen.revision-history.v1", "flow.mcp-content-operation.v1", "pattern.revision-conflict.v1", "flow.draft-publish.v1"],
+  "dataRequirements": [
+    "Revision history retains actor, source, sequence, schema version, and timestamp",
+    "Audit events identify action, entity, revision, actor, source, and metadata",
+    "MCP responses serialize dates and content deterministically"
+  ],
+  "permissions": [
+    "History requires authenticated content read permission",
+    "MCP draft tools require cms:content:write",
+    "MCP publication requires cms:publish"
+  ],
+  "mcpImpact": {
+    "resources": ["reference://catalog", "cms://catalog/blocks", "cms://pages/{pageId}/history"],
+    "tools": ["list_pages", "read_page", "create_page_draft", "update_page_draft", "publish_page", "read_page_history"]
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "a page changed through multiple transports",
+      "when": "the owner opens history",
+      "then": ["every revision is shown newest first", "actor source and publication state are unambiguous"]
+    },
+    {
+      "id": "AC-02",
+      "given": "an MCP token with read scope only",
+      "when": "the client reads and then attempts a write",
+      "then": ["read operations succeed", "the HTTP boundary challenges for the write scope so the client can elevate authorization"]
+    },
+    {
+      "id": "AC-03",
+      "given": "equivalent admin inline and MCP draft commands",
+      "when": "each supplies the same valid document",
+      "then": ["all use identical schema validation", "all append the same revision representation"]
+    },
+    {
+      "id": "AC-04",
+      "given": "an MCP client discovering the server",
+      "when": "it follows protected-resource and authorization-server metadata",
+      "then": ["interactive OAuth can be initiated", "the advertised scopes match tool enforcement"]
+    }
+  ],
+  "fixtures": ["mixed-source revision history", "read-only MCP caller", "publisher MCP caller", "stale MCP write"],
+  "verification": ["History repository integration test", "MCP handler contract test", "OAuth discovery smoke test", "UAT MCP client test"]
+}

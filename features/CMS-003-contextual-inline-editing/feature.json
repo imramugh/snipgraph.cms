@@ -1,0 +1,54 @@
+{
+  "id": "CMS-003",
+  "title": "Contextual inline editing",
+  "status": "released",
+  "story": {
+    "actor": "authenticated site owner",
+    "need": "select rendered content and edit it without leaving the website",
+    "outcome": "maintain content in context while preserving draft and publication safety"
+  },
+  "scope": [
+    "Show editing affordances only to authenticated editors",
+    "Select a rendered block by pointer or keyboard",
+    "Edit block fields in a non-obstructive contextual panel",
+    "Save through the shared draft command",
+    "Preview and explicitly publish the current draft"
+  ],
+  "nonGoals": ["Anonymous edit links", "Multi-user presence", "Automatic publishing", "Pixel-level layout editing"],
+  "references": ["pattern.inline-editing.v1", "pattern.block-composer.v1", "flow.draft-publish.v1", "pattern.revision-conflict.v1"],
+  "dataRequirements": [
+    "Rendered blocks expose stable content, revision, block, and field identifiers",
+    "Inline saves record inline as their actor source",
+    "The public revision remains unchanged until explicit publish"
+  ],
+  "permissions": ["Anonymous users receive no editing controls or draft data", "Authenticated site owners may edit and publish"],
+  "mcpImpact": {"resources": [], "tools": []},
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "an anonymous visitor",
+      "when": "a published page renders",
+      "then": ["no editor controls or draft values are delivered", "the published page remains usable"]
+    },
+    {
+      "id": "AC-02",
+      "given": "an authenticated editor viewing a published page",
+      "when": "they activate a block",
+      "then": ["the block is visibly selected", "its fields open in a dismissible contextual panel"]
+    },
+    {
+      "id": "AC-03",
+      "given": "an inline edit to a published page",
+      "when": "the editor saves",
+      "then": ["a new draft revision is created with inline source", "anonymous visitors still receive the prior publication"]
+    },
+    {
+      "id": "AC-04",
+      "given": "a stale inline revision",
+      "when": "the editor saves or publishes",
+      "then": ["the operation is rejected", "the panel explains how to refresh without losing the attempted value"]
+    }
+  ],
+  "fixtures": ["anonymous published page", "authenticated page with newer draft", "stale inline editor"],
+  "verification": ["Inline API integration test", "Authenticated browser test", "Anonymous markup assertion", "Keyboard accessibility test"]
+}

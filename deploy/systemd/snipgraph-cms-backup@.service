@@ -1,0 +1,8 @@
+[Unit]
+Description=Validated Snipgraph CMS backup (%i)
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/imran/snipgraph.cms/deploy/scripts/backup.sh %i
+

@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+**/node_modules
+.next
+**/.next
+coverage
+playwright-report
+**/playwright-report
+test-results
+**/test-results
+tailwindplus.packages
+.env
+.env.*
+runtime

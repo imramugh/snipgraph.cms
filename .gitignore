@@ -1,0 +1,28 @@
+# Licensed source inputs: never commit or publish.
+tailwindplus.packages/
+
+# Dependencies and build output.
+node_modules/
+.next/
+dist/
+build/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Local configuration and secrets.
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Runtime state belongs outside the repository.
+runtime/
+.runtime/
+
+# Editor and operating-system files.
+.DS_Store
+.idea/
+.vscode/
+

@@ -1,0 +1,84 @@
+{
+  "id": "CMS-010",
+  "title": "Exhaustive Tailwind Plus Marketing catalog",
+  "status": "released",
+  "story": {
+    "actor": "site owner or delegated agent",
+    "need": "select every licensed Marketing UI pattern and variant from a governed catalog",
+    "outcome": "complete sites and faithful migrations can be composed without inventing layouts from first principles"
+  },
+  "scope": [
+    "Catalog all 133 section variants, 31 site-element variants, five not-found variants, and ten page recipes",
+    "Separate page blocks, site chrome, system screens, and page recipes by their actual content role",
+    "Expose stable family and variant identifiers to admin, inline editing, previews, public rendering, and MCP",
+    "Provide responsive accessible renderers and valid starter data for every selectable page-block family"
+  ],
+  "nonGoals": [
+    "Redistributing Tailwind Plus source files",
+    "Treating composed page examples as indivisible blocks",
+    "Arbitrary HTML or arbitrary CSS classes"
+  ],
+  "references": [
+    "pattern.exhaustive-marketing-catalog.v1",
+    "pattern.page-recipes.v1",
+    "pattern.site-chrome.v1",
+    "pattern.block-composer.v1"
+  ],
+  "dataRequirements": [
+    "Every catalog entry has a stable family, variant ID, label, role, and source classification",
+    "Variant IDs remain independent of licensed source paths",
+    "Every page-block family uses structured validated content with stable repeater IDs",
+    "Recipes contain ordered block-family and variant references rather than copied example content"
+  ],
+  "permissions": [
+    "Anonymous visitors read published variants only",
+    "Authenticated editors may select variants in drafts",
+    "MCP writers use the same schemas and content service as browser authors"
+  ],
+  "mcpImpact": {
+    "resources": ["cms://catalog/blocks", "cms://catalog/marketing", "cms://catalog/page-recipes"],
+    "tools": ["create_page_draft", "update_page_draft"]
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "the licensed Marketing React package",
+      "when": "the governed catalog is checked",
+      "then": [
+        "all 179 patterns have exactly one stable catalog entry",
+        "the catalog reports 133 sections, 31 elements, five system treatments, and ten recipes",
+        "no licensed source file is shipped or documented"
+      ]
+    },
+    {
+      "id": "AC-02",
+      "given": "an editor or MCP client",
+      "when": "a supported page-block family and variant is selected",
+      "then": [
+        "starter data passes the shared schema",
+        "the variant is retained through draft, preview, publish, and read-back",
+        "the public renderer exposes the stable family and variant identifiers"
+      ]
+    },
+    {
+      "id": "AC-03",
+      "given": "a page recipe",
+      "when": "it is selected during page creation",
+      "then": [
+        "the recipe expands into editable structured blocks",
+        "authors may subsequently reorder, replace, and edit every generated block"
+      ]
+    }
+  ],
+  "fixtures": [
+    "catalog manifest containing all 179 entries",
+    "one page containing every page-block family",
+    "one generated page per recipe"
+  ],
+  "verification": [
+    "Licensed-input-to-catalog coverage test",
+    "Schema and default-data test for every family and variant",
+    "Admin and MCP catalog contract tests",
+    "Responsive and accessibility browser tests"
+  ]
+}

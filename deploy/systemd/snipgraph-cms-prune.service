@@ -1,0 +1,8 @@
+[Unit]
+Description=Safely prune unused Snipgraph CMS image layers
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/imran/snipgraph.cms/deploy/scripts/prune-images.sh
+

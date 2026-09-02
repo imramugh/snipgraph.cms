@@ -1,0 +1,8 @@
+[Unit]
+Description=Snipgraph CMS public smoke monitor (%i)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/imran/snipgraph.cms/deploy/scripts/smoke-test.sh %i
+

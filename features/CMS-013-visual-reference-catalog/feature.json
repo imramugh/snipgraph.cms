@@ -1,0 +1,101 @@
+{
+  "id": "CMS-013",
+  "title": "Visual reference catalog",
+  "status": "building",
+  "story": {
+    "actor": "designer, developer, content author, or connected product collaborator",
+    "need": "inspect the real appearance and responsive behavior of governed screens, flows, patterns, and content blocks",
+    "outcome": "new work can select and reuse a proven visual pattern without reconstructing it from prose"
+  },
+  "scope": [
+    "Replace the text-card reference route with a visual catalog workbench",
+    "Render every supported content-block family with representative content",
+    "Expose every governed visual variant through a live variant selector",
+    "Provide desktop, tablet, and mobile preview widths",
+    "Represent screens, flows, and interaction patterns with meaningful visual specimens",
+    "Keep stable reference IDs and implementation notes available as secondary details",
+    "Support searching and keyboard-accessible category and specimen selection"
+  ],
+  "nonGoals": [
+    "Copying licensed Tailwind Plus example source into the product or documentation",
+    "Editing production content from the catalog",
+    "Replacing the public-site renderer with a second catalog-only renderer",
+    "Treating visual examples as approval to bypass feature specifications"
+  ],
+  "references": [
+    "screen.reference-catalog.v1",
+    "pattern.exhaustive-marketing-catalog.v1",
+    "pattern.personal-site-blocks.v1",
+    "pattern.governed-theme.v1",
+    "pattern.admin-typography.v1"
+  ],
+  "dataRequirements": [
+    "Catalog selection, search, variant, and viewport are ephemeral browser state",
+    "Block specimens use deterministic representative fixtures and never query site content",
+    "Stable catalog IDs remain identical to their feature-spec and MCP identifiers",
+    "Licensed source filenames and package contents are never exposed at runtime"
+  ],
+  "permissions": [
+    "The catalog remains read-only",
+    "Catalog previews cannot invoke content mutations",
+    "Public catalog visibility does not expose administrative or licensed source data"
+  ],
+  "mcpImpact": {
+    "resources": [],
+    "tools": []
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "a visitor opens the reference catalog",
+      "when": "they browse content blocks",
+      "then": [
+        "all seventeen block families are selectable",
+        "the selected block is rendered with representative content using the production renderer",
+        "every governed variant for that block can be selected and seen",
+        "the preview can be constrained to desktop, tablet, or mobile width"
+      ]
+    },
+    {
+      "id": "AC-02",
+      "given": "a visitor browses screens, flows, or patterns",
+      "when": "they select a catalog entry",
+      "then": [
+        "the primary artifact is a visual specimen or diagram rather than a prose card",
+        "the stable ID and concise usage guidance remain visible beside the specimen"
+      ]
+    },
+    {
+      "id": "AC-03",
+      "given": "a visitor uses a keyboard or narrow viewport",
+      "when": "they search, change category, select a specimen, or change preview controls",
+      "then": [
+        "every control has an accessible name and visible focus state",
+        "selection state is conveyed without relying on color alone",
+        "the catalog remains usable without horizontal page overflow"
+      ]
+    },
+    {
+      "id": "AC-04",
+      "given": "the exhaustive Marketing catalog changes",
+      "when": "the reference catalog is verified",
+      "then": [
+        "the existing 179-entry coverage contract still passes",
+        "no licensed source package is included in Git or a container build context"
+      ]
+    }
+  ],
+  "fixtures": [
+    "representative deterministic content for all seventeen block families",
+    "a block family with one variant and a family with twelve or more variants",
+    "screen miniatures for list, create, editor, history, media, and settings",
+    "flow diagrams for draft/publish, MCP operation, and environment promotion",
+    "desktop, tablet, and mobile preview widths"
+  ],
+  "verification": [
+    "Reference catalog browser contracts on desktop and mobile",
+    "Variant and viewport interaction tests",
+    "Accessibility scan of the visual workbench",
+    "Reference, Marketing coverage, build, UAT, and production verification loops"
+  ]
+}

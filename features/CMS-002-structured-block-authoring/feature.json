@@ -1,0 +1,71 @@
+{
+  "id": "CMS-002",
+  "title": "Structured block authoring",
+  "status": "released",
+  "story": {
+    "actor": "site owner",
+    "need": "create pages and compose them from a governed catalog of reusable blocks",
+    "outcome": "build a structured website without deriving each page from first principles"
+  },
+  "scope": [
+    "Create a page as an unpublished draft",
+    "Validate blocks against a versioned block catalog",
+    "Add, edit, reorder, and remove supported blocks",
+    "Search and filter the page list",
+    "Render every supported block on public and preview routes"
+  ],
+  "nonGoals": [
+    "Free-form HTML blocks",
+    "Third-party block plugins",
+    "Visual drag-and-drop positioning"
+  ],
+  "references": [
+    "screen.content-list.v1",
+    "screen.page-create.v1",
+    "screen.content-editor.v1",
+    "pattern.block-composer.v1",
+    "flow.draft-publish.v1"
+  ],
+  "dataRequirements": [
+    "Every block has a stable identifier, catalog type, and schema version",
+    "Page paths are unique per site",
+    "Unsupported block data is rejected before persistence",
+    "Block order is represented by document order"
+  ],
+  "permissions": [
+    "Only authenticated editors may create or change drafts",
+    "Anonymous visitors can read only published revisions"
+  ],
+  "mcpImpact": {
+    "resources": ["cms://catalog/blocks", "cms://sites/{siteId}/pages/{pageId}"],
+    "tools": ["create_page_draft", "update_page_draft", "list_pages", "read_page"]
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "an authenticated editor on the page list",
+      "when": "they create a valid page",
+      "then": ["an unpublished revision one is stored", "the editor opens for the new page"]
+    },
+    {
+      "id": "AC-02",
+      "given": "a page draft and the block catalog",
+      "when": "the editor composes and saves supported blocks",
+      "then": ["the complete document passes catalog validation", "block identifiers and order are preserved"]
+    },
+    {
+      "id": "AC-03",
+      "given": "an existing page path",
+      "when": "another page attempts to use it",
+      "then": ["the mutation is rejected as a path conflict", "the existing page is unchanged"]
+    },
+    {
+      "id": "AC-04",
+      "given": "a published page at any supported path",
+      "when": "an anonymous visitor requests the path",
+      "then": ["only the published revision renders", "every block uses its catalog renderer"]
+    }
+  ],
+  "fixtures": ["empty site", "page containing every supported block", "duplicate page path"],
+  "verification": ["Catalog schema tests", "Repository integration tests", "Admin creation browser test", "Public route browser test"]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "CMS-001",
+  "title": "Page draft and publish",
+  "status": "released",
+  "story": {
+    "actor": "site owner",
+    "need": "create and revise a block-based page without changing the live site",
+    "outcome": "review a draft and deliberately publish an immutable revision"
+  },
+  "scope": [
+    "Create a page draft with title, slug, description, and typed blocks",
+    "Update a draft using optimistic concurrency",
+    "Preview and publish the current draft",
+    "Expose equivalent application commands to the admin UI and MCP"
+  ],
+  "nonGoals": [
+    "Multi-person approval workflow",
+    "Scheduled publishing",
+    "Unattended service-account authorization"
+  ],
+  "references": [
+    "screen.content-list.v1",
+    "screen.content-editor.v1",
+    "flow.draft-publish.v1",
+    "pattern.revision-conflict.v1"
+  ],
+  "dataRequirements": [
+    "A page owns immutable numbered revisions",
+    "Draft and published pointers are independent",
+    "Every revision records actor and timestamp",
+    "Blocks have stable identifiers, type names, versions, and validated data"
+  ],
+  "permissions": [
+    "An authenticated editor may create and update drafts",
+    "An authenticated publisher may publish a draft",
+    "The MVP site owner holds both permissions"
+  ],
+  "mcpImpact": {
+    "resources": ["cms://sites/{siteId}/pages/{pageId}"],
+    "tools": ["create_page_draft", "update_page_draft", "publish_page"]
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC-01",
+      "given": "a published page and an authenticated editor",
+      "when": "the editor saves a changed draft",
+      "then": ["the published revision is unchanged", "the preview displays the new draft"]
+    },
+    {
+      "id": "AC-02",
+      "given": "a draft loaded at revision sequence N",
+      "when": "another update has already created sequence N+1",
+      "then": ["the stale update is rejected", "the current draft is not overwritten"]
+    },
+    {
+      "id": "AC-03",
+      "given": "a valid current draft",
+      "when": "the publisher explicitly publishes it",
+      "then": ["the live page points at that immutable revision", "the action is auditable"]
+    },
+    {
+      "id": "AC-04",
+      "given": "equivalent browser and MCP commands",
+      "when": "they update the same draft value",
+      "then": ["both apply identical validation", "both create the same revision shape"]
+    }
+  ],
+  "fixtures": ["empty site", "one draft page", "published page with a newer draft"],
+  "verification": [
+    "Domain unit tests",
+    "PostgreSQL repository integration tests",
+    "Admin browser test",
+    "MCP Inspector contract test",
+    "UAT draft/publish smoke test"
+  ]
+}

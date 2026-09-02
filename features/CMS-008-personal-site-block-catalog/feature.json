@@ -1,0 +1,22 @@
+{
+  "id": "CMS-008",
+  "title": "Personal site block catalog",
+  "status": "released",
+  "story": {
+    "actor": "site owner or delegated agent",
+    "need": "compose a complete modern personal site from proven semantic patterns",
+    "outcome": "new pages reuse governed blocks instead of deriving presentation from first principles"
+  },
+  "scope": ["Add statistics, testimonial, logo cloud, project grid, and contact blocks", "Render every block in editors, previews, public pages, and MCP schemas", "Use licensed Tailwind Plus patterns as private structural design input"],
+  "nonGoals": ["Arbitrary HTML", "Pixel-level layout controls", "Redistributing Tailwind Plus source files"],
+  "references": ["pattern.personal-site-blocks.v1", "pattern.block-composer.v1", "pattern.media-picker.v1"],
+  "dataRequirements": ["Every block has a stable ID, type, version, and validated data", "Repeaters have stable item IDs", "All links use the safe-link policy"],
+  "permissions": ["Only authenticated editors may change block drafts", "Anonymous visitors read published blocks only"],
+  "mcpImpact": {"resources": ["cms://catalog/blocks"], "tools": ["create_page_draft", "update_page_draft"]},
+  "acceptanceCriteria": [
+    {"id": "AC-01", "given": "the block catalog", "when": "an editor or MCP client discovers it", "then": ["all personal-site block types and purposes are present", "default values pass the shared schema"]},
+    {"id": "AC-02", "given": "a page containing each supported block", "when": "it is previewed and published", "then": ["every block has an accessible responsive renderer", "editor order matches public order"]}
+  ],
+  "fixtures": ["page containing every catalog block", "blocks with maximum repeater sizes"],
+  "verification": ["Catalog schema test", "Block editor browser test", "Public responsive browser test", "Accessibility scan"]
+}
