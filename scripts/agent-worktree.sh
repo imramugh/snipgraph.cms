@@ -87,13 +87,28 @@ case "$command_name" in
     fi
 
     git -C "$repo_root" fetch origin main
-    if ! git -C "$repo_root" merge-base --is-ancestor "$branch" origin/main; then
-      printf 'Branch is not merged into origin/main: %s\n' "$branch" >&2
-      exit 1
+    merged_by_ancestry=false
+    if git -C "$repo_root" merge-base --is-ancestor "$branch" origin/main; then
+      merged_by_ancestry=true
+    else
+      if ! command -v gh >/dev/null; then
+        printf 'Branch is not an ancestor of origin/main and GitHub CLI is unavailable to verify a squash merge: %s\n' "$branch" >&2
+        exit 1
+      fi
+      repository=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
+      merged_pull_requests=$(gh pr list --repo "$repository" --head "$branch" --state merged --json number --jq length)
+      if [[ $merged_pull_requests -lt 1 ]]; then
+        printf 'Branch is not contained in origin/main and has no merged pull request: %s\n' "$branch" >&2
+        exit 1
+      fi
     fi
 
     git -C "$repo_root" worktree remove "$path"
-    git -C "$repo_root" branch -d "$branch"
+    if [[ $merged_by_ancestry == true ]]; then
+      git -C "$repo_root" branch -d "$branch"
+    else
+      git -C "$repo_root" branch -D "$branch"
+    fi
     printf 'Removed merged worktree: %s\n' "$path"
     ;;
   -h|--help|help)
