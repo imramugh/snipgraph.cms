@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Reject licensed source packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          tracked=$(git ls-files 'tailwindplus.packages' 'tailwindplus.packages/**')
+          if [[ -n "$tracked" ]]; then
+            printf 'Licensed Tailwind Plus source packages must never be tracked:\n%s\n' "$tracked" >&2
+            exit 1
+          fi
+          grep -Fxq 'tailwindplus.packages/' .gitignore
+          grep -Fxq 'tailwindplus.packages' .dockerignore
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify repository
+        run: pnpm check

@@ -41,4 +41,5 @@ the same validation, revision-conflict, and publication boundaries as browser
 operations.
 
 See `docs/mcp.md` for the MCP resources, tools, scopes, and client setup model,
-and `docs/deployment.md` for immutable UAT-to-production promotion.
+`docs/parallel-development.md` for protected worktree-based development, and
+`docs/deployment.md` for immutable UAT-to-production promotion.
